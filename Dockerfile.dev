@@ -1,0 +1,28 @@
+# syntax=docker/dockerfile:1
+
+# Development-only image. Builds a single service from source inside Docker so
+# `docker compose watch` can rebuild just that service when its code changes.
+#
+# Usage (normally driven by docker-compose.dev.yml):
+#   docker build -f Dockerfile.dev --build-arg SERVICE=accounts-service -t accounts-service:dev .
+
+ARG SERVICE
+
+FROM maven:3.9-eclipse-temurin-21 AS build
+ARG SERVICE
+
+WORKDIR /build
+
+# Dependencies are cached in a BuildKit cache mount, so code-only changes
+# reuse the downloaded Maven artifacts.
+COPY ${SERVICE}/pom.xml ./
+COPY ${SERVICE}/src ./src
+RUN --mount=type=cache,target=/root/.m2 \
+    mvn -q -DskipTests package
+
+FROM eclipse-temurin:21-jre
+
+WORKDIR /app
+COPY --from=build /build/target/*.jar app.jar
+
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]

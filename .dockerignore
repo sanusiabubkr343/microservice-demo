@@ -1,0 +1,15 @@
+# Only source and POM files are needed by Dockerfile.dev.
+.git
+.gitignore
+.idea
+**/target
+**/.mvn
+**/mvnw
+**/mvnw.cmd
+**/HELP.md
+**/.gitattributes
+**/.gitignore
+.dev
+docker-compose*.yml
+Dockerfile*
+DEV.md

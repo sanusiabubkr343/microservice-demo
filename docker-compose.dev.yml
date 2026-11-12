@@ -1,0 +1,62 @@
+# Development override: builds services from source and enables file watching.
+#
+# Start everything with:
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml watch
+#
+# Only the service whose files changed is rebuilt and recreated; Eureka, the
+# gateway and the databases keep running.
+
+services:
+
+  eureka-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      args:
+        SERVICE: eureka-server
+    develop:
+      watch:
+        - action: rebuild
+          path: ./eureka-server/src
+        - action: rebuild
+          path: ./eureka-server/pom.xml
+
+  accounts-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      args:
+        SERVICE: accounts-service
+    develop:
+      watch:
+        - action: rebuild
+          path: ./accounts-service/src
+        - action: rebuild
+          path: ./accounts-service/pom.xml
+
+  loans-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      args:
+        SERVICE: loans-service
+    develop:
+      watch:
+        - action: rebuild
+          path: ./loans-service/src
+        - action: rebuild
+          path: ./loans-service/pom.xml
+
+  gateway-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      args:
+        SERVICE: gateway-service
+    develop:
+      watch:
+        - action: rebuild
+          path: ./gateway-service/src
+        - action: rebuild
+          path: ./gateway-service/pom.xml
